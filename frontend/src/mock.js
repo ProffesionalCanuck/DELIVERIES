@@ -95,7 +95,7 @@ export const mockData = {
   
   benefits: [
     "No delivery fees on orders over $50",
-    "Quick 30-45 minute delivery window",
+    "Quick 15-20 minute delivery window",
     "Cash or card payment accepted at door",
     "Professional and discrete service",
     "Local Calgary business you can trust"
