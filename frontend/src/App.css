@@ -294,6 +294,12 @@ body {
     padding: 1rem;
   }
   
+  /* Mobile layout for services */
+  .services-top-row {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  
   .btn-primary,
   .btn-secondary {
     width: 100%;
