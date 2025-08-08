@@ -18,15 +18,15 @@ const Hero = () => {
     <section className="hero-section">
       <div className="hero-content">
         <h1 className="hero-title">
-          Calgary's Fastest
+          South Calgary's Fastest
           <br />
-          <span className="text-accent">Liquor Delivery</span>
+          <span className="text-accent">Dial a Bottle</span>
         </h1>
         
         <p className="hero-subtitle">
-          24/7 dial-a-bottle service exclusively for deep south Calgary. 
-          Home-grown Canadian business delivering beer, wine, and spirits to your door in 30-45 minutes.
-          When you need liquor near me or after hours alcohol delivery, we're here to help!
+          24/7 Dial A Bottle in Calgary's Deep South. We'll never be far from you like all the others who go everywhere else. 
+          We're dedicated exclusively to Calgary's deep south WHICH MEANS faster delivery times, better service, and we actually know the neighborhood. 
+          No more waiting hours for delivery from across the city.
         </p>
         
         <div style={{ 
