@@ -1,6 +1,7 @@
 import React from 'react';
 import { Phone } from 'lucide-react';
 import { mockData } from '../mock';
+import { trackPhoneClick } from './Analytics';
 
 const Header = () => {
   const scrollToSection = (sectionId) => {
@@ -8,6 +9,11 @@ const Header = () => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const handleCallClick = async () => {
+    await trackPhoneClick('header', 'main');
+    window.location.href = `tel:${mockData.company.phone}`;
   };
 
   return (
@@ -80,9 +86,35 @@ const Header = () => {
         >
           Coverage Area
         </button>
+
+        <button 
+          onClick={() => scrollToSection('faq')}
+          style={{ 
+            background: 'none', 
+            border: 'none', 
+            color: 'var(--text-muted)',
+            cursor: 'pointer',
+            fontFamily: 'system-ui, sans-serif',
+            fontSize: '1rem',
+            fontWeight: '500',
+            padding: '6px 12px',
+            borderRadius: '9999px',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.background = 'rgba(0, 0, 0, 0.05)';
+            e.target.style.color = 'var(--text-primary)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = 'none';
+            e.target.style.color = 'var(--text-muted)';
+          }}
+        >
+          FAQ
+        </button>
         
         <button 
-          onClick={() => scrollToSection('contact')}
+          onClick={handleCallClick}
           className="btn-primary"
         >
           Call Now
