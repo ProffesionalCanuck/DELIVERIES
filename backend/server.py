@@ -33,6 +33,7 @@ api_router.include_router(contact.router, tags=["Contact"])
 api_router.include_router(testimonials.router, tags=["Testimonials"])
 api_router.include_router(newsletter.router, tags=["Newsletter"])
 api_router.include_router(analytics.router, tags=["Analytics"])
+api_router.include_router(faq.router, tags=["FAQ"])
 
 # Include the router in the main app
 app.include_router(api_router)
