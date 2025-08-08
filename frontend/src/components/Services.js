@@ -29,7 +29,8 @@ const Services = () => {
             gap: '2rem 1.5rem',
             maxWidth: '1200px',
             margin: '0 auto'
-          }}>
+          }}
+          className="services-top-row">
             {mockData.services.slice(0, 3).map((service) => {
               const IconComponent = iconMap[service.icon];
               return (
