@@ -223,7 +223,7 @@ const LocationBanner = () => {
             minHeight: 'auto'
           }}
         >
-          {isInCoverageArea ? 'Order Now!' : 'Call to Check Coverage'}
+          {isInCoverageArea ? 'Order Now!' : 'Call - We Might Deliver!'}
         </button>
       </div>
     );
