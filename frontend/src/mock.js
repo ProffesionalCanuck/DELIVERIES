@@ -25,17 +25,17 @@ export const mockData = {
     },
     {
       id: 3,
-      title: "Home-Grown Canadian Service",
-      description: "Proud Canadian-owned business serving our local Calgary community.",
-      icon: "Heart",
-      highlight: "Local & Proud"
-    },
-    {
-      id: 4,
       title: "Deep South Calgary Focus",
       description: "Exclusive service to deep south Calgary means faster delivery times for you.",
       icon: "MapPin",
       highlight: "Lightning Fast"
+    },
+    {
+      id: 4,
+      title: "Home-Grown Canadian Service",
+      description: "Proud Canadian-owned business serving our local Calgary community.",
+      icon: "Heart",
+      highlight: "Local & Proud"
     }
   ],
   
