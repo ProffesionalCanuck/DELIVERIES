@@ -2,6 +2,7 @@ import React from 'react';
 import { Phone, Clock, MapPin } from 'lucide-react';
 import { mockData } from '../mock';
 import { trackPhoneClick } from './Analytics';
+import LocationBanner from './LocationBanner';
 
 const Hero = () => {
   const handleCallNow = async () => {
@@ -19,6 +20,9 @@ const Hero = () => {
   return (
     <section className="hero-section">
       <div className="hero-content">
+        {/* Location-based personalization */}
+        <LocationBanner />
+        
         <h1 className="hero-title">
           South Calgary's Fastest
           <br />
