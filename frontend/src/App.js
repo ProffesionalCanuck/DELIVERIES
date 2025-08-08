@@ -10,6 +10,7 @@ import Contact from "./components/Contact";
 import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
 import Analytics from "./components/Analytics";
+import ChatWidget from "./components/ChatWidget";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <FAQ />
       </main>
       <Footer />
+      <ChatWidget />
     </div>
   );
 }
