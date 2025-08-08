@@ -1,9 +1,12 @@
 import React from 'react';
 import { Phone, Clock, MapPin, DollarSign, Star } from 'lucide-react';
 import { mockData } from '../mock';
+import { trackPhoneClick } from './Analytics';
+import ContactForm from './ContactForm';
 
 const Contact = () => {
-  const handleCall = () => {
+  const handleCall = async () => {
+    await trackPhoneClick('contact-section', 'main');
     window.location.href = `tel:${mockData.company.phone}`;
   };
 
@@ -21,10 +24,13 @@ const Contact = () => {
         
         <div style={{ 
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
           gap: '2rem',
           marginBottom: '3rem'
         }}>
+          {/* Contact Form */}
+          <ContactForm />
+          
           {/* Contact Info Card */}
           <div style={{ 
             background: 'var(--bg-card)',
@@ -70,100 +76,39 @@ const Contact = () => {
             >
               Call Now
             </button>
-          </div>
-          
-          {/* Service Details Card */}
-          <div style={{ 
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border-light)',
-            borderRadius: '16px',
-            padding: '2rem'
-          }}>
-            <h3 className="heading-3" style={{ marginBottom: '1.5rem' }}>
-              Service Details
-            </h3>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div style={{ 
-                  background: 'var(--accent-wash)', 
-                  borderRadius: '8px', 
-                  padding: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  <Clock size={20} color="var(--accent-text)" />
-                </div>
-                <div>
-                  <div className="body-medium" style={{ fontWeight: '600' }}>
-                    Operating Hours
-                  </div>
-                  <div className="body-small" style={{ color: 'var(--text-secondary)' }}>
-                    24/7 - Always Available
-                  </div>
-                </div>
-              </div>
+
+            {/* Service Details */}
+            <div style={{ 
+              marginTop: '2rem',
+              paddingTop: '2rem',
+              borderTop: '1px solid var(--border-light)'
+            }}>
+              <h4 className="heading-3" style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>
+                Service Details
+              </h4>
               
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div style={{ 
-                  background: 'var(--accent-wash)', 
-                  borderRadius: '8px', 
-                  padding: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  <MapPin size={20} color="var(--accent-text)" />
-                </div>
-                <div>
-                  <div className="body-medium" style={{ fontWeight: '600' }}>
-                    Delivery Time
-                  </div>
-                  <div className="body-small" style={{ color: 'var(--text-secondary)' }}>
-                    15-20 minutes average
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', textAlign: 'left' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <Clock size={16} color="var(--accent-text)" />
+                  <div>
+                    <div className="body-small" style={{ fontWeight: '600' }}>24/7 Service</div>
+                    <div className="caption">Always available</div>
                   </div>
                 </div>
-              </div>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div style={{ 
-                  background: 'var(--accent-wash)', 
-                  borderRadius: '8px', 
-                  padding: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  <DollarSign size={20} color="var(--accent-text)" />
-                </div>
-                <div>
-                  <div className="body-medium" style={{ fontWeight: '600' }}>
-                    Payment
-                  </div>
-                  <div className="body-small" style={{ color: 'var(--text-secondary)' }}>
-                    Cash or card at your door
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <MapPin size={16} color="var(--accent-text)" />
+                  <div>
+                    <div className="body-small" style={{ fontWeight: '600' }}>15-20 min delivery</div>
+                    <div className="caption">Deep south Calgary</div>
                   </div>
                 </div>
-              </div>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div style={{ 
-                  background: 'var(--accent-wash)', 
-                  borderRadius: '8px', 
-                  padding: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  <Star size={20} color="var(--accent-text)" />
-                </div>
-                <div>
-                  <div className="body-medium" style={{ fontWeight: '600' }}>
-                    Multiple Item Deals
-                  </div>
-                  <div className="body-small" style={{ color: 'var(--text-secondary)' }}>
-                    Save on 2+ item orders
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <DollarSign size={16} color="var(--accent-text)" />
+                  <div>
+                    <div className="body-small" style={{ fontWeight: '600' }}>Cash or card</div>
+                    <div className="caption">Payment at door</div>
                   </div>
                 </div>
               </div>
