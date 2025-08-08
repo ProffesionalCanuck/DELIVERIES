@@ -23,108 +23,47 @@ const Services = () => {
         </div>
         
         <div className="services-grid">
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '2rem 1.5rem',
-            maxWidth: '1200px',
-            margin: '0 auto'
-          }}
-          className="services-top-row">
-            {mockData.services.slice(0, 3).map((service) => {
-              const IconComponent = iconMap[service.icon];
-              return (
-                <div key={service.id} className="service-card">
+          {mockData.services.map((service) => {
+            const IconComponent = iconMap[service.icon];
+            return (
+              <div key={service.id} className="service-card">
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '1rem',
+                  marginBottom: '1rem' 
+                }}>
                   <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '1rem',
-                    marginBottom: '1rem' 
+                    background: 'var(--accent-wash)', 
+                    borderRadius: '12px', 
+                    padding: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}>
-                    <div style={{ 
-                      background: 'var(--accent-wash)', 
-                      borderRadius: '12px', 
-                      padding: '12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <IconComponent size={24} color="var(--accent-text)" />
-                    </div>
-                    <div>
-                      <h3 className="heading-3">{service.title}</h3>
-                      <span style={{ 
-                        background: 'var(--accent-primary)', 
-                        color: 'white',
-                        padding: '2px 8px',
-                        borderRadius: '12px',
-                        fontSize: '0.75rem',
-                        fontWeight: '600'
-                      }}>
-                        {service.highlight}
-                      </span>
-                    </div>
+                    <IconComponent size={24} color="var(--accent-text)" />
                   </div>
-                  
-                  <p className="body-medium" style={{ color: 'var(--text-secondary)' }}>
-                    {service.description}
-                  </p>
+                  <div>
+                    <h3 className="heading-3">{service.title}</h3>
+                    <span style={{ 
+                      background: 'var(--accent-primary)', 
+                      color: 'white',
+                      padding: '2px 8px',
+                      borderRadius: '12px',
+                      fontSize: '0.75rem',
+                      fontWeight: '600'
+                    }}>
+                      {service.highlight}
+                    </span>
+                  </div>
                 </div>
-              );
-            })}
-          </div>
-          
-          {/* Home-Grown Canadian Service - Centered on second row */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            marginTop: '2rem'
-          }}>
-            <div style={{ maxWidth: '350px', width: '100%' }}>
-              {(() => {
-                const service = mockData.services[3]; // Home-Grown Canadian Service
-                const IconComponent = iconMap[service.icon];
-                return (
-                  <div className="service-card">
-                    <div style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: '1rem',
-                      marginBottom: '1rem' 
-                    }}>
-                      <div style={{ 
-                        background: 'var(--accent-wash)', 
-                        borderRadius: '12px', 
-                        padding: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}>
-                        <IconComponent size={24} color="var(--accent-text)" />
-                      </div>
-                      <div>
-                        <h3 className="heading-3">{service.title}</h3>
-                        <span style={{ 
-                          background: 'var(--accent-primary)', 
-                          color: 'white',
-                          padding: '2px 8px',
-                          borderRadius: '12px',
-                          fontSize: '0.75rem',
-                          fontWeight: '600'
-                        }}>
-                          {service.highlight}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <p className="body-medium" style={{ color: 'var(--text-secondary)' }}>
-                      {service.description}
-                    </p>
-                  </div>
-                );
-              })()}
-            </div>
-          </div>
+                
+                <p className="body-medium" style={{ color: 'var(--text-secondary)' }}>
+                  {service.description}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
