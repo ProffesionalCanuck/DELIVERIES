@@ -64,6 +64,13 @@ async def startup_event():
             await seed_testimonials()
             logger.info("Seeded initial testimonials")
             
+        # Seed FAQs if none exist
+        faq_count = await db.faqs.count_documents({})
+        if faq_count == 0:
+            from backend.routes.faq import seed_faqs
+            await seed_faqs()
+            logger.info("Seeded initial FAQs")
+            
         logger.info("South Calgary Quick Delivery API started successfully")
     except Exception as e:
         logger.error(f"Startup error: {str(e)}")
