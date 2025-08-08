@@ -49,6 +49,27 @@ textarea:focus {
   color: rgb(0, 55, 32);
 }
 
+/* Location banner animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* Custom scrollbar for webkit browsers */
 ::-webkit-scrollbar {
   width: 8px;
