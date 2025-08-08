@@ -72,15 +72,6 @@ const TestimonialsSection = () => {
   return (
     <section className="section">
       <div className="container">
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h2 className="heading-2" style={{ marginBottom: '1rem' }}>
-            What Deep South Calgary Says About Us
-          </h2>
-          <p className="body-large" style={{ color: 'var(--text-secondary)' }}>
-            Real reviews from real neighbors who love our lightning-fast service
-          </p>
-        </div>
-        
         <div style={{ 
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
