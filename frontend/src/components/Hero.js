@@ -26,6 +26,7 @@ const Hero = () => {
         <p className="hero-subtitle">
           24/7 dial-a-bottle service exclusively for deep south Calgary. 
           Home-grown Canadian business delivering beer, wine, and spirits to your door in 30-45 minutes.
+          When you need liquor near me or after hours alcohol delivery, we're here to help!
         </p>
         
         <div style={{ 
