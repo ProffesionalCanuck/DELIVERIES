@@ -186,7 +186,7 @@ const LocationBanner = () => {
           }}>
             {isInCoverageArea 
               ? `Perfect! We deliver to ${detectedNeighborhood}!`
-              : `We're close to ${detectedNeighborhood}!`
+              : `You're not too far from us!`
             }
           </h3>
         </div>
