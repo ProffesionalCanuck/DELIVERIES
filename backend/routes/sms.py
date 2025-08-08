@@ -25,18 +25,12 @@ def send_sms_notification(contact_submission: ContactSubmission):
         # Initialize Twilio client
         client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
         
-        # Format the message
-        message_body = f"""🚀 NEW DELIVERY REQUEST!
+        # Format the message - Simple and clean
+        message_body = f"""NEW ORDER REQUEST:
 
-👤 Customer: {contact_submission.name}
-📱 Phone: {contact_submission.phone}
-📧 Email: {contact_submission.email}
-📍 Area: {contact_submission.neighborhood}
-
-📝 Order Details:
-{contact_submission.message}
-
-💰 Call now for instant quote!"""
+Name: {contact_submission.name}
+Phone: {contact_submission.phone}
+Request: {contact_submission.message}"""
         
         # Send the SMS
         message = client.messages.create(
