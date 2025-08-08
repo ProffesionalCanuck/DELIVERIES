@@ -39,15 +39,13 @@ export const mockData = {
     }
   ],
   
-  // Placeholder neighborhoods - will be updated with actual list
+  // Real coverage areas for South Calgary Quick Delivery
   coverageAreas: [
-    "Acadia", "Alberta Park", "Applewood Park", "Bayview", "Bonavista Downs",
-    "Braeside", "Canyon Meadows", "Cedarbrae", "Chaparral", "Deer Ridge",
-    "Diamond Cove", "Douglasdale/Glen", "Eagle Ridge", "Evergreen", "Fairview",
-    "Fish Creek Park", "Fountain Estates", "Lake Bonavista", "Lakewood",
-    "Maple Ridge", "McKenzie Lake", "Midnapore", "Palliser", "Pump Hill",
-    "Ramsay", "Riverbend", "Shawnee Slopes", "Silverado", "Somerset",
-    "Southwood", "Stanley Park", "Sundance", "Walden", "Willow Park"
+    "Auburn Bay", "Belmont", "Bridlewood", "Chaparral", "Chestemere",
+    "Copperfield", "Cranston", "Douglasdale", "Evergreen", "Hotchkiss",
+    "Inverness", "Legacy", "Mahogany", "McKenzie Lake", "McKenzieTowne",
+    "Midnapore", "Milrise", "New Brighton", "Okotoks", "Seton",
+    "Shawnessy", "Silverado", "Sundance", "Walden"
   ],
   
   seoKeywords: [
