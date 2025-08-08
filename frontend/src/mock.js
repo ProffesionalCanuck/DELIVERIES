@@ -4,7 +4,7 @@ export const mockData = {
     name: "South Calgary Quick Delivery",
     tagline: "24/7 Liquor Delivery to Deep South Calgary",
     description: "Home-grown Canadian courier service delivering alcohol straight to your door in Calgary's deep south neighborhoods.",
-    phone: "(403) XXX-XXXX", // Placeholder - will be updated
+    phone: "1-368-338-0225"
     hours: "24/7 - Always Open"
   },
   
