@@ -12,7 +12,7 @@ export const mockData = {
     {
       id: 1,
       title: "24/7 Delivery Service",
-      description: "Around-the-clock alcohol delivery service. Day or night, we're here to help.",
+      description: "Around-the-clock delivery service. Day or night, we're here to help.",
       icon: "Clock",
       highlight: "Always Available"
     },
