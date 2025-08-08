@@ -56,7 +56,13 @@ export const mockData = {
     "Calgary alcohol courier",
     "beer wine spirits delivery Calgary",
     "emergency alcohol delivery",
-    "late night liquor delivery Calgary"
+    "late night liquor delivery Calgary",
+    "liquor near me",
+    "after hours alcohol",
+    "after hours booze",
+    "24/7 liquor",
+    "calgary dial a bottle",
+    "yyc dial a bottle"
   ],
   
   benefits: [
