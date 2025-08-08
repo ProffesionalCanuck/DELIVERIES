@@ -3,6 +3,7 @@ from typing import List
 from datetime import datetime
 from backend.models import ContactSubmission, ContactSubmissionCreate
 from backend.server import db
+from backend.routes.sms import send_sms_notification
 import logging
 
 logger = logging.getLogger(__name__)
@@ -21,6 +22,14 @@ async def submit_contact_form(contact_data: ContactSubmissionCreate):
         
         if result.inserted_id:
             logger.info(f"New contact submission from {contact_data.name} in {contact_data.neighborhood}")
+            
+            # Send SMS notification to business phone
+            sms_sent = send_sms_notification(contact_obj)
+            if sms_sent:
+                logger.info("SMS notification sent to business phone")
+            else:
+                logger.warning("SMS notification failed - check Twilio credentials")
+            
             return contact_obj
         else:
             raise HTTPException(status_code=500, detail="Failed to save contact submission")
