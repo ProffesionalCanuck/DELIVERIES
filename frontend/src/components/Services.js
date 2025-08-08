@@ -65,39 +65,6 @@ const Services = () => {
             );
           })}
         </div>
-        
-        {/* Benefits Section */}
-        <div style={{ 
-          marginTop: '4rem',
-          background: 'var(--accent-wash)',
-          borderRadius: '16px',
-          padding: '2rem',
-          textAlign: 'center'
-        }}>
-          <h3 className="heading-3" style={{ marginBottom: '1.5rem' }}>
-            <span className="text-accent">Amazing Deals</span> on Multiple Items
-          </h3>
-          
-          <div style={{ 
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '1rem',
-            maxWidth: '800px',
-            margin: '0 auto'
-          }}>
-            {mockData.benefits.map((benefit, index) => (
-              <div key={index} style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '0.5rem',
-                justifyContent: 'center'
-              }}>
-                <Star size={16} color="var(--accent-text)" fill="var(--accent-primary)" />
-                <span className="body-medium">{benefit}</span>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </section>
   );
