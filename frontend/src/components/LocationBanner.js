@@ -208,8 +208,9 @@ const LocationBanner = () => {
             color: 'var(--text-body)',
             fontSize: '0.95rem'
           }}>
-            We might be able to deliver to your area! Our closest service areas are: {' '}
-            {nearbyAreas.map(area => area.name).join(', ')}
+            You're not too far from our service area! We might be able to squeeze you in. 
+            Our closest service areas are: {nearbyAreas.map(area => area.name).join(', ')}. 
+            Give us a call and we'll see what we can do!
           </p>
         )}
         
