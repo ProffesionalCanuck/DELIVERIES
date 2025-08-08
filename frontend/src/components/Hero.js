@@ -1,9 +1,12 @@
 import React from 'react';
 import { Phone, Clock, MapPin } from 'lucide-react';
 import { mockData } from '../mock';
+import { trackPhoneClick } from './Analytics';
+import Newsletter from './Newsletter';
 
 const Hero = () => {
-  const handleCallNow = () => {
+  const handleCallNow = async () => {
+    await trackPhoneClick('hero', 'main');
     window.location.href = `tel:${mockData.company.phone}`;
   };
 
@@ -60,7 +63,8 @@ const Hero = () => {
           justifyContent: 'center',
           alignItems: 'center',
           flexWrap: 'wrap',
-          opacity: '0.8'
+          opacity: '0.8',
+          marginBottom: '2rem'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Clock size={16} color="var(--accent-text)" />
@@ -91,6 +95,11 @@ const Hero = () => {
               Home-Grown Canadian
             </span>
           </div>
+        </div>
+
+        {/* Newsletter signup in hero */}
+        <div style={{ maxWidth: '500px', margin: '0 auto' }}>
+          <Newsletter inline={true} />
         </div>
       </div>
     </section>
