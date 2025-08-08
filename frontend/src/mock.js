@@ -36,6 +36,13 @@ export const mockData = {
       description: "Proud Canadian-owned business serving our local Calgary community.",
       icon: "Heart",
       highlight: "Local & Proud"
+    },
+    {
+      id: 5,
+      title: "Extra Items? No Problem!",
+      description: "If there's something else you want picked up on the way from the store, don't be afraid to ask!",
+      icon: "Plus",
+      highlight: "Just Ask"
     }
   ],
   
