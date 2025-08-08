@@ -119,8 +119,8 @@ const Footer = () => {
               {[
                 'Dial-a-bottle Calgary',
                 'Liquor delivery service',
-                '24/7 alcohol delivery',
-                'Beer, wine & spirits delivery',
+                '24/7 Customer Service',
+                'Day time, Beer, wine & spirits delivery',
                 'Emergency alcohol delivery',
                 'Multiple item discounts'
               ].map((service, index) => (
