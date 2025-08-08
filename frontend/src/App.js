@@ -2,6 +2,7 @@ import React from "react";
 import "./App.css";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
+import WeekendPromotion from "./components/WeekendPromotion";
 import Services from "./components/Services";
 import TestimonialsSection from "./components/TestimonialsSection";
 import CoverageArea from "./components/CoverageArea";
@@ -17,6 +18,9 @@ function App() {
       <Header />
       <main>
         <Hero />
+        <div className="container">
+          <WeekendPromotion />
+        </div>
         <Services />
         <TestimonialsSection />
         <CoverageArea />
