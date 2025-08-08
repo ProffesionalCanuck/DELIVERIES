@@ -87,15 +87,6 @@ const FAQ = () => {
   return (
     <section id="faq" className="section section-bg">
       <div className="container">
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h2 className="heading-2" style={{ marginBottom: '1rem' }}>
-            Frequently Asked Questions
-          </h2>
-          <p className="body-large" style={{ color: 'var(--text-secondary)' }}>
-            Everything you need to know about Calgary's fastest liquor delivery service
-          </p>
-        </div>
-
         {/* Category filters */}
         <div style={{
           display: 'flex',
