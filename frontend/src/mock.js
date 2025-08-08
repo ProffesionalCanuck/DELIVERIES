@@ -49,20 +49,48 @@ export const mockData = {
   ],
   
   seoKeywords: [
+    // Primary Target Keywords
     "dial a bottle Calgary",
-    "liquor delivery Calgary",
-    "alcohol delivery deep south Calgary",
+    "liquor delivery Calgary", 
+    "alcohol delivery Calgary",
+    "calgary dial a bottle",
+    "yyc dial a bottle",
     "24/7 liquor delivery",
-    "Calgary alcohol courier",
-    "beer wine spirits delivery Calgary",
-    "emergency alcohol delivery",
-    "late night liquor delivery Calgary",
+    
+    // Location-Based Keywords
     "liquor near me",
+    "alcohol delivery deep south Calgary",
+    "Calgary alcohol courier",
+    "liquor delivery south Calgary",
+    "YYC alcohol delivery",
+    
+    // Time-Based Keywords  
     "after hours alcohol",
     "after hours booze",
     "24/7 liquor",
-    "calgary dial a bottle",
-    "yyc dial a bottle"
+    "late night liquor delivery Calgary",
+    "emergency alcohol delivery",
+    "same day liquor delivery Calgary",
+    
+    // Product-Specific Keywords
+    "beer delivery Calgary",
+    "wine delivery Calgary", 
+    "spirits delivery Calgary",
+    "beer wine spirits delivery Calgary",
+    "craft beer delivery Calgary",
+    
+    // Service-Type Keywords
+    "Calgary liquor store delivery",
+    "order alcohol online Calgary",
+    "alcohol delivery service Calgary",
+    "liquor courier Calgary",
+    "booze delivery Calgary",
+    "Calgary bottle delivery",
+    
+    // Competitor Analysis Keywords
+    "no markup liquor delivery",
+    "retail price liquor delivery",
+    "fast alcohol delivery Calgary"
   ],
   
   benefits: [
