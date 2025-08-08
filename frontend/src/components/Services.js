@@ -1,12 +1,13 @@
 import React from 'react';
-import { Clock, ShoppingBag, MapPin, Heart, Star, DollarSign } from 'lucide-react';
+import { Clock, ShoppingBag, MapPin, Heart, Star, DollarSign, Plus } from 'lucide-react';
 import { mockData } from '../mock';
 
 const iconMap = {
   'Clock': Clock,
   'ShoppingBag': ShoppingBag,
   'MapPin': MapPin,
-  'Heart': Heart
+  'Heart': Heart,
+  'Plus': Plus
 };
 
 const Services = () => {
