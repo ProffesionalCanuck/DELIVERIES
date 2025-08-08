@@ -48,8 +48,8 @@ const Footer = () => {
               lineHeight: '1.6',
               margin: '0 0 1rem 0'
             }}>
-              Home-grown Canadian liquor delivery service exclusively serving deep south Calgary neighborhoods with 24/7 availability. 
-              Specializing in after hours alcohol, same-day beer delivery, wine delivery, and craft spirits delivery to YYC's fastest growing communities.
+              Home-grown Canadians.. You get it lol, delivery service exclusively serving deep south Calgary neighborhoods with 24/7 availability. 
+              Specializing in fast, cheap and efficient same-day delivery to YYC's fastest growing communities.
             </p>
             
             <div style={{ 
