@@ -121,7 +121,7 @@ const Contact = () => {
                     Delivery Time
                   </div>
                   <div className="body-small" style={{ color: 'var(--text-secondary)' }}>
-                    30-45 minutes average
+                    15-20 minutes average
                   </div>
                 </div>
               </div>
