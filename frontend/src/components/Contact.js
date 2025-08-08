@@ -179,7 +179,7 @@ const Contact = () => {
           textAlign: 'center'
         }}>
           <h3 className="heading-3" style={{ marginBottom: '1rem' }}>
-            Calgary's Premier <span className="text-accent">Dial-a-Bottle</span> Service
+            Calgary's Premier <span className="text-accent">Dial-a-Bottle</span> & After Hours Alcohol Service
           </h3>
           <p className="body-medium" style={{ 
             color: 'var(--text-secondary)', 
@@ -188,7 +188,8 @@ const Contact = () => {
             margin: '0 auto 1.5rem auto'
           }}>
             When you need alcohol delivery in Calgary's deep south, trust our local Canadian business. 
-            Fast, reliable liquor delivery service with amazing deals on multiple items.
+            Fast, reliable liquor delivery service with amazing deals on multiple items. No markup pricing - 
+            same-day beer, wine, and spirits delivery from YYC's fastest courier service.
           </p>
           <button className="btn-primary" onClick={handleCall}>
             Order Your Liquor Delivery Now
