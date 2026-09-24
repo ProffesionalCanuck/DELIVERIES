@@ -2,20 +2,17 @@
 """Activity-triggered screen recorder.
 
 Records *your own* screen to local video files, but only while there is
-mouse or keyboard activity, so idle time is skipped. It can be turned off
-and on from a button in the window or from a global hotkey.
+mouse or keyboard activity, so idle time is skipped. Turn it off and on with
+a global hotkey or the on-screen button, or run it invisibly in the
+background (see --headless and the START/STOP double-click files).
 
-Design notes / what this program is and is not:
-  * It records the machine it runs on. Use it only on computers you own or
-    administer, and with the knowledge of anyone whose activity might be
-    captured. See README.md.
-  * Mouse and keyboard input are used ONLY as an "is the user active?"
-    signal. The program never records *which* keys are pressed -- it is not
-    a keylogger.
-  * Recordings are written to a local folder you choose. Nothing is sent
-    over the network. "Private" here means local-only.
-  * The window is a visible, on-top recording indicator by design. It is
-    meant to be an obvious, user-controlled tool, not a hidden one.
+What this program is and is not:
+  * It records the machine it runs on. Use it only on a computer you own or
+    administer. See README.md.
+  * Mouse/keyboard input is used ONLY as an "is someone active?" signal. It
+    never records which keys are pressed -- it is not a keylogger.
+  * Recordings and the text log stay in a local folder you choose. Nothing is
+    sent over the network.
 """
 
 from __future__ import annotations
@@ -62,11 +59,10 @@ if _MISSING:
     sys.exit(1)
 
 
-# States reported to the UI / console.
-STATE_DISABLED = "disabled"        # toggle is OFF
-STATE_ARMED = "armed"              # ON, waiting for activity
-STATE_RECORDING = "recording"      # ON, activity present, capturing
-STATE_IDLE = "idle"                # ON, but paused because no activity
+STATE_DISABLED = "disabled"
+STATE_ARMED = "armed"
+STATE_RECORDING = "recording"
+STATE_IDLE = "idle"
 
 STATE_LABELS = {
     STATE_DISABLED: "Off",
@@ -80,8 +76,7 @@ def _timestamp() -> str:
     return _dt.datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
-def open_in_file_manager(path: Path) -> None:
-    """Open a folder in the OS file manager (best effort)."""
+def open_in_file_manager(path) -> None:
     path = str(path)
     try:
         if platform.system() == "Windows":
@@ -101,7 +96,7 @@ class ActivityMonitor:
     """Tracks the time of the most recent mouse/keyboard activity.
 
     Only the *timestamp* of activity is stored. Key identities are never
-    recorded or inspected -- on_press simply notes that some key was used.
+    recorded or inspected.
     """
 
     def __init__(self) -> None:
@@ -110,13 +105,12 @@ class ActivityMonitor:
         self._mouse_listener = None
         self._keyboard_listener = None
 
-    # -- listener callbacks (kept intentionally minimal) --
     def _mark(self, *_args, **_kwargs) -> None:
         with self._lock:
             self._last = time.monotonic()
 
     def _on_key(self, _key) -> None:
-        # Deliberately ignores which key was pressed; just marks activity.
+        # Ignores which key was pressed; just marks that activity happened.
         self._mark()
 
     def start(self) -> None:
@@ -148,35 +142,43 @@ class Recorder:
 
     def __init__(
         self,
-        output_dir: Path,
+        output_dir,
         fps: int = 8,
         idle_timeout: float = 5.0,
         monitor_index: int = 0,
+        timestamp_overlay: bool = True,
+        log_events: bool = True,
         enabled: bool = False,
     ) -> None:
         self.output_dir = Path(output_dir).expanduser()
         self.fps = max(1, int(fps))
         self.idle_timeout = float(idle_timeout)
         self.monitor_index = int(monitor_index)
+        self.timestamp_overlay = bool(timestamp_overlay)
+        self.log_events = bool(log_events)
 
         self._enabled = threading.Event()
         if enabled:
             self._enabled.set()
 
         self._stop = threading.Event()
-        self._thread: threading.Thread | None = None
+        self._thread = None
         self._monitor = ActivityMonitor()
+        self._log_lock = threading.Lock()
 
-        # Stats/state for the UI (guarded by _stat_lock).
         self._stat_lock = threading.Lock()
         self._state = STATE_DISABLED
-        self._current_file: Path | None = None
+        self._current_file = None
         self._segment_frames = 0
-        self._segment_started_at: float | None = None
+        self._segment_started_at = None
         self._total_segments = 0
-        self._last_error: str | None = None
+        self._last_error = None
 
-    # -- public toggle API --
+    @property
+    def log_path(self):
+        return self.output_dir / "activity_log.txt"
+
+    # -- toggle API --
     @property
     def enabled(self) -> bool:
         return self._enabled.is_set()
@@ -191,7 +193,7 @@ class Recorder:
         self.set_enabled(not self.enabled)
         return self.enabled
 
-    # -- stats accessors --
+    # -- stats --
     def snapshot(self) -> dict:
         with self._stat_lock:
             seg_elapsed = (
@@ -213,6 +215,18 @@ class Recorder:
         with self._stat_lock:
             self._state = state
 
+    def _log(self, msg: str) -> None:
+        if not self.log_events:
+            return
+        line = "%s  %s\n" % (_dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), msg)
+        try:
+            with self._log_lock:
+                self.output_dir.mkdir(parents=True, exist_ok=True)
+                with open(self.log_path, "a", encoding="utf-8") as fh:
+                    fh.write(line)
+        except Exception:
+            pass
+
     # -- lifecycle --
     def start(self) -> None:
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -228,7 +242,7 @@ class Recorder:
 
     # -- capture helpers --
     def _grab_monitor(self, sct) -> dict:
-        monitors = sct.monitors  # index 0 is the full virtual screen
+        monitors = sct.monitors  # index 0 = full virtual screen
         idx = self.monitor_index
         if idx < 0 or idx >= len(monitors):
             idx = 0
@@ -240,7 +254,6 @@ class Recorder:
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         writer = cv2.VideoWriter(str(filename), fourcc, float(self.fps), (width, height))
         if not writer.isOpened():
-            # Fall back to a very widely supported AVI/XVID combo.
             filename = self.output_dir / ("recording_%s.avi" % _timestamp())
             fourcc = cv2.VideoWriter_fourcc(*"XVID")
             writer = cv2.VideoWriter(str(filename), fourcc, float(self.fps), (width, height))
@@ -251,6 +264,7 @@ class Recorder:
             self._segment_frames = 0
             self._segment_started_at = time.monotonic()
             self._total_segments += 1
+        self._log("activity detected - recording started -> %s" % filename.name)
         return writer
 
     def _close_writer(self, writer) -> None:
@@ -260,8 +274,28 @@ class Recorder:
             except Exception:
                 pass
         with self._stat_lock:
+            cur = self._current_file
+            frames = self._segment_frames
+            started = self._segment_started_at
             self._current_file = None
             self._segment_started_at = None
+        if cur is not None:
+            secs = (time.monotonic() - started) if started else 0.0
+            self._log(
+                "recording stopped -> %s (%d frames, %.0fs)"
+                % (Path(cur).name, frames, secs)
+            )
+
+    def _draw_timestamp(self, frame):
+        """Burn a date/time stamp into the top-left of the frame (for evidence)."""
+        text = _dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        scale, thick = 0.6, 1
+        (tw, th), base = cv2.getTextSize(text, font, scale, thick)
+        x, y = 10, 12 + th
+        cv2.rectangle(frame, (x - 6, y - th - 8), (x + tw + 6, y + base + 4), (0, 0, 0), -1)
+        cv2.putText(frame, text, (x, y), font, scale, (255, 255, 255), thick, cv2.LINE_AA)
+        return frame
 
     def _run(self) -> None:
         frame_interval = 1.0 / self.fps
@@ -282,7 +316,6 @@ class Recorder:
 
                 idle = self._monitor.seconds_since_activity()
                 if idle > self.idle_timeout:
-                    # No recent activity -> pause and finalize the segment.
                     if writer is not None:
                         self._close_writer(writer)
                         writer = None
@@ -290,19 +323,20 @@ class Recorder:
                     time.sleep(0.2)
                     continue
 
-                # Active: capture a frame.
                 try:
                     monitor = self._grab_monitor(sct)
                     raw = sct.grab(monitor)
                     frame = np.asarray(raw)  # BGRA
-                    frame = frame[:, :, :3]  # drop alpha -> BGR (what cv2 wants)
+                    # drop alpha -> BGR (cv2 order); copy so it is writable+contiguous
+                    frame = np.ascontiguousarray(frame[:, :, :3])
+                    if self.timestamp_overlay:
+                        self._draw_timestamp(frame)
 
                     height, width = frame.shape[:2]
                     if writer is None:
                         target_size = (width, height)
                         writer = self._new_writer(width, height)
                     elif (width, height) != target_size:
-                        # Resolution changed (e.g. monitor swap); start fresh.
                         self._close_writer(writer)
                         target_size = (width, height)
                         writer = self._new_writer(width, height)
@@ -312,41 +346,38 @@ class Recorder:
                         self._segment_frames += 1
                         self._last_error = None
                     self._set_state(STATE_RECORDING)
-                except Exception as exc:  # keep the thread alive on transient errors
+                except Exception as exc:
                     with self._stat_lock:
                         self._last_error = str(exc)
                     self._set_state(STATE_ARMED)
                     time.sleep(0.5)
 
-                # Maintain target FPS.
                 elapsed = time.monotonic() - loop_start
                 remaining = frame_interval - elapsed
                 if remaining > 0:
                     time.sleep(remaining)
 
-        # Clean shutdown.
         if writer is not None:
             self._close_writer(writer)
 
 
 # ----------------------------------------------------------------------------
-# Global hotkey (optional)
+# Global hotkeys (optional)
 # ----------------------------------------------------------------------------
-class HotkeyToggle:
-    """Registers a global hotkey that toggles the recorder on/off."""
+class GlobalHotkeys:
+    """Registers global hotkeys from a {combo: callback} mapping."""
 
-    def __init__(self, combo: str, callback) -> None:
-        self.combo = combo
-        self.callback = callback
+    def __init__(self, mapping: dict) -> None:
+        self.mapping = mapping
         self._listener = None
 
     def start(self) -> bool:
         try:
-            self._listener = keyboard.GlobalHotKeys({self.combo: self.callback})
+            self._listener = keyboard.GlobalHotKeys(self.mapping)
             self._listener.start()
             return True
         except Exception as exc:  # pragma: no cover - platform dependent
-            print("Global hotkey unavailable (%s): %s" % (self.combo, exc))
+            print("Global hotkeys unavailable: %s" % exc)
             self._listener = None
             return False
 
@@ -359,24 +390,46 @@ class HotkeyToggle:
 
 
 # ----------------------------------------------------------------------------
+# Stop-flag watcher (lets a double-click STOP file end a hidden run)
+# ----------------------------------------------------------------------------
+def start_flag_watcher(stop_flag: Path, quit_event: threading.Event) -> threading.Thread:
+    def _watch():
+        while not quit_event.is_set():
+            try:
+                if stop_flag.exists():
+                    try:
+                        stop_flag.unlink()
+                    except Exception:
+                        pass
+                    quit_event.set()
+                    break
+            except Exception:
+                pass
+            time.sleep(0.5)
+
+    t = threading.Thread(target=_watch, name="stop-flag", daemon=True)
+    t.start()
+    return t
+
+
+# ----------------------------------------------------------------------------
 # GUI
 # ----------------------------------------------------------------------------
-def run_gui(recorder: Recorder, hotkey_combo: str) -> None:
+def run_gui(recorder: Recorder, toggle_combo: str, quit_combo: str, quit_event) -> None:
     import tkinter as tk
     from tkinter import filedialog, ttk
 
     root = tk.Tk()
     root.title("Activity Screen Recorder")
-    root.attributes("-topmost", True)  # visible, on-top indicator by design
+    root.attributes("-topmost", True)
     try:
-        root.minsize(430, 300)
+        root.minsize(440, 300)
     except Exception:
         pass
 
     main = ttk.Frame(root, padding=14)
     main.pack(fill="both", expand=True)
 
-    # Toggle button + status dot.
     toggle_var = tk.StringVar()
     status_var = tk.StringVar()
     detail_var = tk.StringVar()
@@ -403,21 +456,20 @@ def run_gui(recorder: Recorder, hotkey_combo: str) -> None:
         anchor="w", pady=(2, 8)
     )
 
-    # Settings frame.
     settings = ttk.LabelFrame(main, text="Settings", padding=10)
     settings.pack(fill="x", pady=(4, 8))
 
     ttk.Label(settings, text="Frames/sec:").grid(row=0, column=0, sticky="w")
     fps_var = tk.IntVar(value=recorder.fps)
-    fps_spin = ttk.Spinbox(settings, from_=1, to=30, width=6, textvariable=fps_var)
-    fps_spin.grid(row=0, column=1, sticky="w", padx=(6, 16))
+    ttk.Spinbox(settings, from_=1, to=30, width=6, textvariable=fps_var).grid(
+        row=0, column=1, sticky="w", padx=(6, 16)
+    )
 
     ttk.Label(settings, text="Pause after idle (s):").grid(row=0, column=2, sticky="w")
     idle_var = tk.DoubleVar(value=recorder.idle_timeout)
-    idle_spin = ttk.Spinbox(
+    ttk.Spinbox(
         settings, from_=1, to=120, increment=1, width=6, textvariable=idle_var
-    )
-    idle_spin.grid(row=0, column=3, sticky="w", padx=(6, 0))
+    ).grid(row=0, column=3, sticky="w", padx=(6, 0))
 
     def apply_settings(*_a) -> None:
         try:
@@ -432,7 +484,6 @@ def run_gui(recorder: Recorder, hotkey_combo: str) -> None:
     fps_var.trace_add("write", apply_settings)
     idle_var.trace_add("write", apply_settings)
 
-    # Output folder row.
     folder_row = ttk.Frame(main)
     folder_row.pack(fill="x", pady=(0, 6))
 
@@ -442,20 +493,21 @@ def run_gui(recorder: Recorder, hotkey_combo: str) -> None:
             recorder.output_dir = Path(chosen)
             refresh()
 
-    ttk.Button(folder_row, text="Change folder…", command=choose_folder).pack(
-        side="left"
-    )
+    ttk.Button(folder_row, text="Change folder…", command=choose_folder).pack(side="left")
     ttk.Button(
         folder_row, text="Open folder", command=lambda: open_in_file_manager(recorder.output_dir)
     ).pack(side="left", padx=(6, 0))
 
-    hint = "Hotkey: %s toggles on/off" % hotkey_combo.replace("<", "").replace(">", "")
-    ttk.Label(main, text=hint, foreground="#777777").pack(anchor="w", pady=(4, 0))
+    keys = "Hotkeys: %s = on/off, %s = quit" % (
+        toggle_combo.replace("<", "").replace(">", ""),
+        quit_combo.replace("<", "").replace(">", ""),
+    )
+    ttk.Label(main, text=keys, foreground="#777777").pack(anchor="w", pady=(4, 0))
     ttk.Label(
         main,
-        text="Records only while you are active. Saved locally; nothing is uploaded.",
+        text="Records only while active. Saved locally; nothing is uploaded.",
         foreground="#777777",
-        wraplength=400,
+        wraplength=410,
         justify="left",
     ).pack(anchor="w", pady=(2, 0))
 
@@ -472,24 +524,25 @@ def run_gui(recorder: Recorder, hotkey_combo: str) -> None:
         status_var.set(STATE_LABELS.get(state, state))
         dot.itemconfig(dot_id, fill=dot_colors.get(state, "#888888"))
         toggle_var.set("Turn OFF" if recorder.enabled else "Turn ON")
-
         if snap["error"]:
             detail_var.set("Error: %s" % snap["error"])
         elif state == STATE_RECORDING:
             detail_var.set(
-                "Segment: %d frames, %.0fs  |  total segments this run: %d"
+                "Segment: %d frames, %.0fs  |  segments this run: %d"
                 % (snap["segment_frames"], snap["segment_elapsed"], snap["total_segments"])
             )
         else:
             detail_var.set("Segments recorded this run: %d" % snap["total_segments"])
-
         cur = snap["current_file"]
-        if cur is not None:
-            file_var.set("Writing: %s" % Path(cur).name)
-        else:
-            file_var.set("Folder: %s" % snap["output_dir"])
+        file_var.set(
+            ("Writing: %s" % Path(cur).name) if cur is not None
+            else ("Folder: %s" % snap["output_dir"])
+        )
 
     def tick() -> None:
+        if quit_event is not None and quit_event.is_set():
+            on_close()
+            return
         refresh()
         root.after(250, tick)
 
@@ -504,12 +557,12 @@ def run_gui(recorder: Recorder, hotkey_combo: str) -> None:
 
 
 # ----------------------------------------------------------------------------
-# Headless mode
+# Headless mode (no window)
 # ----------------------------------------------------------------------------
-def run_headless(recorder: Recorder) -> None:
+def run_headless(recorder: Recorder, quit_event: threading.Event) -> None:
     last_state = None
     try:
-        while True:
+        while not quit_event.is_set():
             snap = recorder.snapshot()
             if snap["state"] != last_state:
                 last_state = snap["state"]
@@ -520,7 +573,7 @@ def run_headless(recorder: Recorder) -> None:
                 print("[%s] %s" % (_dt.datetime.now().strftime("%H:%M:%S"), msg))
             time.sleep(0.4)
     except KeyboardInterrupt:
-        print("\nStopping...")
+        pass
 
 
 # ----------------------------------------------------------------------------
@@ -528,9 +581,9 @@ def run_headless(recorder: Recorder) -> None:
 # ----------------------------------------------------------------------------
 def parse_args(argv=None) -> argparse.Namespace:
     default_dir = Path.home() / "ScreenRecordings"
+    default_flag = Path(__file__).resolve().with_name("stop_recording.flag")
     parser = argparse.ArgumentParser(
-        description="Record your own screen, but only while you are active. "
-        "Toggle on/off from the window or a global hotkey."
+        description="Record your own screen, but only while you are active."
     )
     parser.add_argument(
         "-o", "--output", default=str(default_dir),
@@ -546,8 +599,24 @@ def parse_args(argv=None) -> argparse.Namespace:
         help="Monitor index; 0 = all monitors combined (default: 0)",
     )
     parser.add_argument(
+        "--no-timestamp", action="store_true",
+        help="Do not burn a date/time stamp into the video.",
+    )
+    parser.add_argument(
+        "--no-log", action="store_true",
+        help="Do not write the activity_log.txt timeline.",
+    )
+    parser.add_argument(
         "--hotkey", default="<ctrl>+<alt>+r",
-        help="Global toggle hotkey in pynput format (default: <ctrl>+<alt>+r)",
+        help="Global on/off hotkey (default: <ctrl>+<alt>+r)",
+    )
+    parser.add_argument(
+        "--quit-hotkey", default="<ctrl>+<alt>+q",
+        help="Global quit hotkey (default: <ctrl>+<alt>+q)",
+    )
+    parser.add_argument(
+        "--stop-flag", default=str(default_flag),
+        help="If this file appears, the program stops (used by the STOP file).",
     )
     parser.add_argument(
         "--start-on", action="store_true",
@@ -555,7 +624,7 @@ def parse_args(argv=None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--headless", action="store_true",
-        help="Run without a window (toggle via hotkey; Ctrl+C to quit).",
+        help="Run without any window (start recording immediately; no console needed).",
     )
     return parser.parse_args(argv)
 
@@ -568,31 +637,46 @@ def main(argv=None) -> int:
         fps=args.fps,
         idle_timeout=args.idle_timeout,
         monitor_index=args.monitor,
+        timestamp_overlay=not args.no_timestamp,
+        log_events=not args.no_log,
         enabled=args.start_on or args.headless,
     )
     recorder.start()
 
-    hotkey = HotkeyToggle(args.hotkey, recorder.toggle)
-    hotkey.start()
+    # Clear any stale stop flag, then watch for a new one.
+    quit_event = threading.Event()
+    stop_flag = Path(args.stop_flag)
+    try:
+        if stop_flag.exists():
+            stop_flag.unlink()
+    except Exception:
+        pass
+    start_flag_watcher(stop_flag, quit_event)
 
+    hotkeys = GlobalHotkeys(
+        {args.hotkey: recorder.toggle, args.quit_hotkey: quit_event.set}
+    )
+    hotkeys.start()
+
+    recorder._log("program launched (%s mode)" % ("headless" if args.headless else "window"))
     print("Recordings folder: %s" % recorder.output_dir)
-    print("Toggle hotkey: %s" % args.hotkey)
+    print("On/off hotkey: %s   Quit hotkey: %s" % (args.hotkey, args.quit_hotkey))
 
     try:
         if args.headless:
-            run_headless(recorder)
+            run_headless(recorder, quit_event)
         else:
             try:
-                run_gui(recorder, args.hotkey)
+                run_gui(recorder, args.hotkey, args.quit_hotkey, quit_event)
             except Exception as exc:
-                print("GUI unavailable (%s); falling back to headless mode." % exc)
-                print("Press Ctrl+C to stop.")
+                print("GUI unavailable (%s); running without a window." % exc)
                 if not recorder.enabled:
                     recorder.set_enabled(True)
-                run_headless(recorder)
+                run_headless(recorder, quit_event)
     finally:
-        hotkey.stop()
+        hotkeys.stop()
         recorder.shutdown()
+        recorder._log("program stopped")
         print("Stopped. Files saved in: %s" % recorder.output_dir)
     return 0
 

@@ -1,80 +1,136 @@
 # Activity Screen Recorder
 
-A small desktop tool that records **your own screen** to local video files,
-but **only while you're actually active** (moving the mouse or typing). When
-you stop for a while it pauses automatically, so you don't end up with hours
-of an idle desktop. You can turn recording **off and on** at any time.
+Records **your own screen** to video files on your own computer, but **only
+while the mouse or keyboard is being used** — so idle time isn't recorded. You
+turn it on when you want (for example before bed) and off when you're done. It
+can run **invisibly** (no window), and it saves everything locally — nothing is
+ever uploaded.
 
-It's meant to be a straightforward, visible tool you run on a computer you own
-or administer — for example to keep a private log of a work session, document
-what you did while troubleshooting, or build a rolling record of activity on
-your own machine.
+It also writes a plain-text `activity_log.txt` listing the exact times activity
+was recorded, and burns a date/time stamp into each video, so you can see when
+things happened.
 
-## What it does (and deliberately doesn't do)
+> It records the computer it runs on. Use it on a computer you own. It does
+> **not** record which keys are pressed — it only notices activity to know when
+> to record.
 
-- **Activity-triggered.** A mouse/keyboard listener is used only as an
-  "is the user active?" signal. When there's been no input for a few seconds
-  (configurable), recording pauses; it resumes on the next movement or keypress.
-- **Not a keylogger.** It records *that* you were active, never *which* keys
-  you pressed. Key identities are ignored.
-- **Local & private.** Video is written to a folder you choose on your own
-  disk. Nothing is uploaded or sent over the network.
-- **On/off control.** Toggle from the button in the window, or with a global
-  hotkey (default `Ctrl+Alt+R`) even when the window isn't focused. It starts
-  **off** by default.
-- **Visible by design.** The window stays on top and shows a colored status
-  dot so it's obvious when recording is active. It is not a hidden/stealth
-  tool and intentionally has no features to conceal itself.
+---
 
-## Install
+## Simple setup (Windows)
 
-Requires Python 3.9+.
+Do the steps in order. Copy-paste one command at a time.
 
-```bash
-cd screen_recorder
+### Step 1 — Install Python (one time)
+
+Download Python from https://www.python.org/downloads/ and run the installer.
+**Important:** on the first screen, tick the box **"Add python.exe to PATH"**,
+then click Install.
+
+### Step 2 — Install the pieces it needs (one time)
+
+Open the **screen_recorder** folder in File Explorer. Click the address bar,
+type `cmd`, and press Enter — a black window opens in this folder. Paste this
+one line and press Enter:
+
+```
 pip install -r requirements.txt
-# On Debian/Ubuntu also: sudo apt install python3-tk
 ```
 
-## Run
+Wait until it finishes, then close the black window.
 
-```bash
-python activity_recorder.py
+### Step 3 — Test it once (recommended)
+
+1. Double-click **`START recording (double-click).vbs`**. (Nothing visible
+   happens — that's correct, it's running hidden.)
+2. Move your mouse around for about 15 seconds.
+3. Double-click **`STOP recording (double-click).vbs`**.
+4. Open the folder **`ScreenRecordings`** inside your user folder
+   (`C:\Users\YOUR-NAME\ScreenRecordings`). You should see a video file and an
+   `activity_log.txt`. If you do, it works.
+
+> If Step 1's "Add to PATH" box was missed, double-clicking START will silently
+> do nothing. Redo Step 1 (re-run the installer → *Modify* → tick "Add to
+> PATH"), or see "If double-click does nothing" below.
+
+### Every night — start it
+
+Double-click **`START recording (double-click).vbs`**. It's now recording
+invisibly whenever the mouse/keyboard is used.
+
+### Every morning — stop it and look
+
+1. Double-click **`STOP recording (double-click).vbs`**.
+2. Open `C:\Users\YOUR-NAME\ScreenRecordings`.
+3. Open `activity_log.txt` to see the exact times there was activity overnight,
+   and play the newest video files (sorted by date) to see what happened.
+
+---
+
+## Where things are saved
+
+- Videos: `C:\Users\YOUR-NAME\ScreenRecordings\recording_YYYYMMDD_HHMMSS.mp4`
+  (a new file each time activity starts after a pause).
+- Timeline: `C:\Users\YOUR-NAME\ScreenRecordings\activity_log.txt`.
+
+## If double-click STOP doesn't work
+
+Any one of these also stops it:
+
+- Press **Ctrl + Alt + Q** on the keyboard.
+- Open **Task Manager** (Ctrl+Shift+Esc) → find **pythonw** → End task.
+
+## If double-click START does nothing
+
+Open the black `cmd` window in the folder (see Step 2) and run this to see the
+error message:
+
+```
+python activity_recorder.py --headless --start-on
 ```
 
-Then click **Turn ON**. A red dot means it's recording; blue means it's on but
-paused because you've been idle; yellow means it's armed and waiting.
+Press **Ctrl + C** in that window to stop it. (This way shows a window, so it's
+only for testing.)
 
-### Useful options
+---
 
-```bash
-python activity_recorder.py --output ~/Recordings   # where to save
-python activity_recorder.py --fps 12                # frames per second (default 8)
-python activity_recorder.py --idle-timeout 10       # pause after 10s idle (default 5)
-python activity_recorder.py --monitor 1             # 0 = all screens, 1 = first monitor, ...
-python activity_recorder.py --hotkey '<ctrl>+<alt>+s'
-python activity_recorder.py --start-on              # begin recording immediately
-python activity_recorder.py --headless              # no window; toggle via hotkey, Ctrl+C to quit
+## Options (advanced)
+
+Run from a command window with any of these:
+
+```
+python activity_recorder.py --help
 ```
 
-Recordings are named `recording_YYYYMMDD_HHMMSS.mp4` (a new file each time
-activity resumes after a pause) and land in the output folder — by default
-`~/ScreenRecordings`.
+| Option | What it does | Default |
+| --- | --- | --- |
+| `--output FOLDER` | Where to save videos | `~/ScreenRecordings` |
+| `--fps N` | Frames per second (higher = smoother, bigger files) | `8` |
+| `--idle-timeout S` | Pause after this many seconds of no activity | `5` |
+| `--monitor N` | `0` = all screens, `1` = first monitor, etc. | `0` |
+| `--headless` | No window at all; starts recording immediately | off |
+| `--start-on` | Start already recording (window mode) | off |
+| `--hotkey` | Global on/off key | `<ctrl>+<alt>+r` |
+| `--quit-hotkey` | Global quit key | `<ctrl>+<alt>+q` |
+| `--no-timestamp` | Don't stamp date/time into the video | stamped |
+| `--no-log` | Don't write `activity_log.txt` | log on |
 
-## Notes & permissions
+Running `python activity_recorder.py` with no options opens a small window with
+an on/off button and a status light (grey = off, yellow = waiting, red =
+recording, blue = paused).
 
-- **macOS:** the first run will prompt for **Screen Recording** and
-  **Accessibility** permissions (System Settings → Privacy & Security). Grant
-  both to your terminal/Python, then restart the app.
-- **Linux:** capture uses the X server. Under Wayland you may need an Xorg
-  session (or an XWayland-compatible setup). Install `python3-tk` for the GUI.
-- **Windows:** no extra setup; the standard Python installer includes tkinter.
-- The global hotkey needs OS input permissions; if it can't be registered the
-  app still works via the on-screen button and prints a note.
+## macOS / Linux
+
+The program itself is cross-platform. The double-click `.vbs` files are
+Windows-only; on macOS/Linux run `python3 activity_recorder.py --headless
+--start-on` and stop it with Ctrl+Alt+Q or by creating the stop file. On macOS
+you must grant **Screen Recording** and **Accessibility** permission (System
+Settings → Privacy & Security). On Linux, an Xorg session works best, and you
+may need `sudo apt install python3-tk` for the optional window.
 
 ## Responsible use
 
-Record only screens you own or are authorized to record, and make sure anyone
-whose activity might be captured knows about it. Recording people without their
-knowledge or consent can be illegal depending on where you are — this tool is
-built to be overt and under your control, and it's on you to use it that way.
+Record only a computer you own or are allowed to record. If you're gathering
+this to show someone or to raise it with family, the date-stamped videos and
+the `activity_log.txt` timeline are what make it credible. And the quickest way
+to stop the access entirely is to set a login password and lock the screen
+(Windows key + L) whenever you step away.

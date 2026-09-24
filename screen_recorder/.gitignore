@@ -3,3 +3,4 @@ recordings/
 *.mp4
 *.avi
 __pycache__/
+stop_recording.flag
