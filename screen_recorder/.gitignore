@@ -1,0 +1,5 @@
+# Never commit captured recordings
+recordings/
+*.mp4
+*.avi
+__pycache__/

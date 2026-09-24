@@ -1,0 +1,7 @@
+# Activity-triggered screen recorder dependencies
+mss>=9.0.1          # fast, cross-platform screen capture
+numpy>=1.24         # frame buffers
+opencv-python>=4.8  # writes captured frames to a video file
+pynput>=1.7.6       # detects mouse/keyboard activity + global hotkey
+# tkinter (the GUI) ships with the standard Python installer on Windows/macOS.
+# On Debian/Ubuntu Linux install it with:  sudo apt install python3-tk
